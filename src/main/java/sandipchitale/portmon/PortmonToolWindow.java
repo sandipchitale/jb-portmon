@@ -150,6 +150,7 @@ public class PortmonToolWindow {
         topLeftToolBar.add(portsLabel, BorderLayout.WEST);
 
         ports = new JTextField();
+        ports.setText(PortmonSettings.getPorts());
         topLeftToolBar.add(ports, BorderLayout.CENTER);
         ports.addActionListener(callNetstat);
 
@@ -163,16 +164,16 @@ public class PortmonToolWindow {
         JLabel statesLabel = new JLabel("States: ");
         topRightToolBar.add(statesLabel);
 
-        closeWaitCheckbox = new JCheckBox("Close wait", false);
+        closeWaitCheckbox = new JCheckBox("Close wait", PortmonSettings.isCloseWait());
         topRightToolBar.add(closeWaitCheckbox);
         closeWaitCheckbox.addActionListener(callNetstat);
-        establishedCheckbox = new JCheckBox("Established", true);
+        establishedCheckbox = new JCheckBox("Established",  PortmonSettings.isEstablished());
         topRightToolBar.add(establishedCheckbox);
         establishedCheckbox.addActionListener(callNetstat);
-        listeningCheckbox = new JCheckBox("Listening", true);
+        listeningCheckbox = new JCheckBox("Listening",  PortmonSettings.isListening());
         topRightToolBar.add(listeningCheckbox);
         listeningCheckbox.addActionListener(callNetstat);
-        timeWaitCheckbox = new JCheckBox("Time wait", false);
+        timeWaitCheckbox = new JCheckBox("Time wait", PortmonSettings.isTimeWait());
         topRightToolBar.add(timeWaitCheckbox);
         timeWaitCheckbox.addActionListener(callNetstat);
 
@@ -198,6 +199,12 @@ public class PortmonToolWindow {
                                     .mapToInt(Integer::parseInt)
                                     .forEach(portsToMonitor::add);
                         }
+                        // Remember
+                        PortmonSettings.setPorts(portsToMonitorString);
+                        PortmonSettings.setCloseWait(closeWaitCheckbox.isSelected());
+                        PortmonSettings.setEstablished(establishedCheckbox.isSelected());
+                        PortmonSettings.setListening(listeningCheckbox.isSelected());
+                        PortmonSettings.setTimeWait(timeWaitCheckbox.isSelected());
                         reader.lines()
                                 .dropWhile((String line) -> !line.startsWith("tcp"))
                                 .map(String::trim)
