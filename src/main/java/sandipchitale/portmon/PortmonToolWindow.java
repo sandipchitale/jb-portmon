@@ -1,5 +1,6 @@
 package sandipchitale.portmon;
 
+import com.intellij.CommonBundle;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -254,13 +255,28 @@ public class PortmonToolWindow {
         int responseIndex = Messages.showYesNoDialog(project,
                 "Kill Process: " + pid,
                 "Kill Process",
-                "Kill",
-                "No",
+                CommonBundle.getYesButtonText(),
+                CommonBundle.getNoButtonText(),
                 AllIcons.Actions.DeleteTag);
-        if (responseIndex == 0) {
-            LOG.info("Killing process id: " + pid);
-            netstat(project, contentToolWindow, netstatTable, netstatTableModel);
+        if (responseIndex == Messages.YES) {
+            killProcessIdImpl(pid);
         }
+    }
+
+    private void killProcessIdImpl(int pid) {
+        if (pid == -1) {
+            return;
+        }
+
+        ProcessHandle.of(pid)
+                .ifPresentOrElse((ProcessHandle process) -> {
+                    LOG.info("Killing process id: " + pid);
+                    process.destroy();
+                    LOG.info("Process with PID " + pid + " has been terminated.");
+                    netstat(project, contentToolWindow, netstatTable, netstatTableModel);
+                }, () -> {
+                    LOG.info("No process found with PID " + pid);
+                });
     }
 
     public JComponent getContent() {
