@@ -11,3 +11,5 @@ A simple port monitor with ability to kill process owning the port.
   - TIME_WAIT
 
 - filter using comma separated list of port numbers
+- remember the settings
+- kill process after confirmation by the user

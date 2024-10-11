@@ -23,15 +23,18 @@
     <change-notes><![CDATA[
 <h2>New Features</h2>
 <ul>
-    <li>...</li>
+    <li>Filter based on port numbers</li>
+    <li>Filter based on port state</li>
+    <li>Remember filters</li>
+    <li>Kill process after user confirmation</li>
 </ul>
 <h2>Features</h2>
 <ul>
-    <li>...</li>
+    <li>Initial Release.</li>
 </ul>
 <h2>Bug Fixes</h2>
 <ul>
-    <li>...</li>
+    <li>N/A</li>
 </ul>
 ]]></change-notes>
 
