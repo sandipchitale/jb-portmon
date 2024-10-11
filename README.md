@@ -1,0 +1,13 @@
+# Portmon
+
+A simple port monitor with ability to kill process owning the port.
+
+## Features
+
+- filter by port state
+  - CLOSE_WAIT
+  - ESTABLISHED
+  - LISTEN
+  - TIME_WAIT
+
+- filter using comma separated list of port numbers

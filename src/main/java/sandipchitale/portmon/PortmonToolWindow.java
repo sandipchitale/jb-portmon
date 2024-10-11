@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.ui.components.JBScrollPane;
@@ -179,11 +180,6 @@ public class PortmonToolWindow {
         netstat(project, contentToolWindow, netstatTable, netstatTableModel);
     }
 
-    private void killProcessId(int pid) {
-        LOG.info("Kill process id: " + pid);
-        netstat(project, contentToolWindow, netstatTable, netstatTableModel);
-    }
-
     private void netstat(Project project, JPanel contentToolWindow, JBTable netstatTable, DefaultTableModel netstatTableModel) {
         contentToolWindow.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
@@ -248,6 +244,23 @@ public class PortmonToolWindow {
                 }
             });
         });
+    }
+
+    private void killProcessId(int pid) {
+        if (pid == -1) {
+            return;
+        }
+
+        int responseIndex = Messages.showYesNoDialog(project,
+                "Kill Process: " + pid,
+                "Kill Process",
+                "Kill",
+                "No",
+                AllIcons.Actions.DeleteTag);
+        if (responseIndex == 0) {
+            LOG.info("Killing process id: " + pid);
+            netstat(project, contentToolWindow, netstatTable, netstatTableModel);
+        }
     }
 
     public JComponent getContent() {
