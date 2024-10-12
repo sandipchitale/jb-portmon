@@ -6,6 +6,8 @@ A simple port monitor with ability to kill process owning the port.
 
 ## Features
 
+NOTE: Works on linux only for now.
+
 - filter by port state
   - CLOSE_WAIT
   - ESTABLISHED
