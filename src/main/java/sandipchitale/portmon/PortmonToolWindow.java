@@ -87,6 +87,7 @@ public class PortmonToolWindow {
         };
 
         this.netstatTable = new JBTable(netstatTableModel);
+        this.netstatTable.setAutoCreateRowSorter(true);
         JBScrollPane scrollPane = new JBScrollPane(netstatTable);
         this.contentToolWindow.add(scrollPane, BorderLayout.CENTER);
 
@@ -117,6 +118,8 @@ public class PortmonToolWindow {
         column.setWidth(140);
         column.setMaxWidth(140);
         column.setCellRenderer(blankMinusOneTableCellRenderer);
+
+        this.netstatTable.getRowSorter().toggleSortOrder(1);
 
         ActionListener callNetstat = (ActionEvent actionEvent) -> {
             netstat(project, contentToolWindow, netstatTable, netstatTableModel);
