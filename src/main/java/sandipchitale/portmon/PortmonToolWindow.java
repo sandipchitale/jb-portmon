@@ -22,9 +22,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class PortmonToolWindow {
     private static final Logger LOG = Logger.getInstance(PortmonToolWindow.class);
@@ -87,7 +85,6 @@ public class PortmonToolWindow {
         };
 
         this.netstatTable = new JBTable(netstatTableModel);
-        this.netstatTable.setAutoCreateRowSorter(true);
         JBScrollPane scrollPane = new JBScrollPane(netstatTable);
         this.contentToolWindow.add(scrollPane, BorderLayout.CENTER);
 
@@ -118,8 +115,6 @@ public class PortmonToolWindow {
         column.setWidth(140);
         column.setMaxWidth(140);
         column.setCellRenderer(blankMinusOneTableCellRenderer);
-
-        this.netstatTable.getRowSorter().toggleSortOrder(1);
 
         ActionListener callNetstat = (ActionEvent actionEvent) -> {
             netstat(project, contentToolWindow, netstatTable, netstatTableModel);
@@ -209,6 +204,7 @@ public class PortmonToolWindow {
                         PortmonSettings.setEstablished(establishedCheckbox.isSelected());
                         PortmonSettings.setListening(listeningCheckbox.isSelected());
                         PortmonSettings.setTimeWait(timeWaitCheckbox.isSelected());
+                        java.util.List<NetstatLine> netstatLinesList = new ArrayList<>();
                         reader.lines()
                               .map(String::trim)
                               .dropWhile((String line) -> !line.toLowerCase().startsWith("tcp"))
@@ -225,20 +221,25 @@ public class PortmonToolWindow {
                                       return;
                                   }
                                   if (portsToMonitor.isEmpty() || portsToMonitor.contains(netstatLine.localPort())) {
-                                      netstatTableModel.addRow(
-                                              new Object[]{
-                                                      netstatLine.localAddress(),
-                                                      netstatLine.localPort(),
-                                                      netstatLine.foreignAddress(),
-                                                      netstatLine.foreignPort(),
-                                                      netstatLine.state(),
-                                                      netstatLine.pid(),
-                                                      AllIcons.Actions.DeleteTag
-                                              }
-                                      );
+                                      netstatLinesList.add(netstatLine);
                                   }
                               });
 
+                        netstatLinesList.stream()
+                            .sorted(Comparator.comparingInt(NetstatLine::localPort))
+                            .forEach(netstatLine -> {
+                                        netstatTableModel.addRow(
+                                                new Object[]{
+                                                        netstatLine.localAddress(),
+                                                        netstatLine.localPort(),
+                                                        netstatLine.foreignAddress(),
+                                                        netstatLine.foreignPort(),
+                                                        netstatLine.state(),
+                                                        netstatLine.pid(),
+                                                        AllIcons.Actions.DeleteTag
+                                                }
+                                        );
+                                    });
                     }
                 } catch (IOException e) {
                     LOG.error("Failed to run `" + String.join(" ", netstatCommand) + "'", e);

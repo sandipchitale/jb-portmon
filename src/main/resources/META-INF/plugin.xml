@@ -27,7 +27,6 @@
     <li>Filter based on port state</li>
     <li>Remember filters</li>
     <li>Kill process after user confirmation</li>
-    <li>Column sorting</li>
     <li>Default sort on local port</li>
 </ul>
 <h2>Features</h2>

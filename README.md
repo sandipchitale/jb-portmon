@@ -17,5 +17,4 @@ NOTE: Works on linux and windows only for now.
 - filter using comma separated list of port numbers
 - remember the settings
 - kill process after confirmation by the user
-- Sorting
-  - Default sort on local port
+- Default sort on local port
