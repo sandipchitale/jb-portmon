@@ -39,7 +39,8 @@ public class PortmonToolWindow {
         if (SystemInfo.isWindows) {
             netstatCommand = new String[]{
                     "netstat",
-                    "",
+                    "-anop",
+                    "tcp"
             };
         } else if (SystemInfo.isMac) {
             netstatCommand = new String[]{
@@ -167,10 +168,10 @@ public class PortmonToolWindow {
         closeWaitCheckbox = new JCheckBox("Close wait", PortmonSettings.isCloseWait());
         topRightToolBar.add(closeWaitCheckbox);
         closeWaitCheckbox.addActionListener(callNetstat);
-        establishedCheckbox = new JCheckBox("Established",  PortmonSettings.isEstablished());
+        establishedCheckbox = new JCheckBox("Established", PortmonSettings.isEstablished());
         topRightToolBar.add(establishedCheckbox);
         establishedCheckbox.addActionListener(callNetstat);
-        listeningCheckbox = new JCheckBox("Listening",  PortmonSettings.isListening());
+        listeningCheckbox = new JCheckBox("Listening", PortmonSettings.isListening());
         topRightToolBar.add(listeningCheckbox);
         listeningCheckbox.addActionListener(callNetstat);
         timeWaitCheckbox = new JCheckBox("Time wait", PortmonSettings.isTimeWait());
@@ -196,8 +197,8 @@ public class PortmonToolWindow {
                         String portsToMonitorString = ports.getText();
                         if (!portsToMonitorString.trim().isEmpty()) {
                             Arrays.stream(portsToMonitorString.split(","))
-                                    .mapToInt(Integer::parseInt)
-                                    .forEach(portsToMonitor::add);
+                                  .mapToInt(Integer::parseInt)
+                                  .forEach(portsToMonitor::add);
                         }
                         // Remember
                         PortmonSettings.setPorts(portsToMonitorString);
@@ -206,34 +207,34 @@ public class PortmonToolWindow {
                         PortmonSettings.setListening(listeningCheckbox.isSelected());
                         PortmonSettings.setTimeWait(timeWaitCheckbox.isSelected());
                         reader.lines()
-                                .dropWhile((String line) -> !line.startsWith("tcp"))
-                                .map(String::trim)
-                                .forEach((String trimmedLine) -> {
-                                    NetstatLine netstatLine = NetstatLine.parse(System.currentTimeMillis(), trimmedLine);
-                                    // Apply filters
-                                    if (netstatLine.state().equals(NetstatLine.State.CLOSE_WAIT) && !closeWaitCheckbox.isSelected()) {
-                                        return;
-                                    } else if (netstatLine.state().equals(NetstatLine.State.ESTABLISHED) && !establishedCheckbox.isSelected()) {
-                                        return;
-                                    } else if (netstatLine.state().equals(NetstatLine.State.LISTENING) && !listeningCheckbox.isSelected()) {
-                                        return;
-                                    } else if (netstatLine.state().equals(NetstatLine.State.TIME_WAIT) && !timeWaitCheckbox.isSelected()) {
-                                        return;
-                                    }
-                                    if (portsToMonitor.isEmpty() || portsToMonitor.contains(netstatLine.localPort())) {
-                                        netstatTableModel.addRow(
-                                                new Object[]{
-                                                        netstatLine.localAddress(),
-                                                        netstatLine.localPort(),
-                                                        netstatLine.foreignAddress(),
-                                                        netstatLine.foreignPort(),
-                                                        netstatLine.state(),
-                                                        netstatLine.pid(),
-                                                        AllIcons.Actions.DeleteTag
-                                                }
-                                        );
-                                    }
-                                });
+                              .map(String::trim)
+                              .dropWhile((String line) -> !line.toLowerCase().startsWith("tcp"))
+                              .forEach((String trimmedLine) -> {
+                                  NetstatLine netstatLine = NetstatLine.parse(System.currentTimeMillis(), trimmedLine);
+                                  // Apply filters
+                                  if (netstatLine.state().equals(NetstatLine.State.CLOSE_WAIT) && !closeWaitCheckbox.isSelected()) {
+                                      return;
+                                  } else if (netstatLine.state().equals(NetstatLine.State.ESTABLISHED) && !establishedCheckbox.isSelected()) {
+                                      return;
+                                  } else if (netstatLine.state().equals(NetstatLine.State.LISTENING) && !listeningCheckbox.isSelected()) {
+                                      return;
+                                  } else if (netstatLine.state().equals(NetstatLine.State.TIME_WAIT) && !timeWaitCheckbox.isSelected()) {
+                                      return;
+                                  }
+                                  if (portsToMonitor.isEmpty() || portsToMonitor.contains(netstatLine.localPort())) {
+                                      netstatTableModel.addRow(
+                                              new Object[]{
+                                                      netstatLine.localAddress(),
+                                                      netstatLine.localPort(),
+                                                      netstatLine.foreignAddress(),
+                                                      netstatLine.foreignPort(),
+                                                      netstatLine.state(),
+                                                      netstatLine.pid(),
+                                                      AllIcons.Actions.DeleteTag
+                                              }
+                                      );
+                                  }
+                              });
 
                     }
                 } catch (IOException e) {
@@ -276,14 +277,14 @@ public class PortmonToolWindow {
         }
 
         ProcessHandle.of(pid)
-                .ifPresentOrElse((ProcessHandle process) -> {
-                    LOG.info("Killing process id: " + pid);
-                    process.destroy();
-                    LOG.info("Process with PID " + pid + " has been terminated.");
-                    netstat(project, contentToolWindow, netstatTable, netstatTableModel);
-                }, () -> {
-                    LOG.info("No process found with PID " + pid);
-                });
+                     .ifPresentOrElse((ProcessHandle process) -> {
+                         LOG.info("Killing process id: " + pid);
+                         process.destroy();
+                         LOG.info("Process with PID " + pid + " has been terminated.");
+                         netstat(project, contentToolWindow, netstatTable, netstatTableModel);
+                     }, () -> {
+                         LOG.info("No process found with PID " + pid);
+                     });
     }
 
     public JComponent getContent() {

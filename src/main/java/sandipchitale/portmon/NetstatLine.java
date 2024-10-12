@@ -116,7 +116,8 @@ public record NetstatLine(long timestamp, Proto proto, String localAddress, int 
     }
 
     private static NetstatLine parseWindows(long timestamp,String line) {
-        return parseLinux(timestamp, line);
+        String[] tokens = line.trim().split("\\s+");
+        return new NetstatLine(timestamp, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]);
     }
 
     private static NetstatLine parseMac(long timestamp,String line) {
