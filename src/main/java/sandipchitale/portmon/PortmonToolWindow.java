@@ -43,7 +43,8 @@ public class PortmonToolWindow {
         } else if (SystemInfo.isMac) {
             netstatCommand = new String[]{
                     "netstat",
-                    "",
+                    "-anvp",
+                    "tcp"
             };
         }
     }
