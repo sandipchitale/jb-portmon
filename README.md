@@ -2,6 +2,8 @@
 
 A simple port monitor with ability to kill process owning the port.
 
+![Portmon](screenshots/portmon.png)
+
 ## Features
 
 - filter by port state
