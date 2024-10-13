@@ -48,11 +48,17 @@ public record NetstatLine(long timestamp, Proto proto, String localAddress, int 
     }
 
     public static String getAddress(String address) {
+        if (SystemInfo.isMac) {
+            return address.substring(0, address.lastIndexOf('.'));
+        }
         return address.split(":")[0];
     }
 
     public static int getPort(String address) {
         try {
+            if (SystemInfo.isMac) {
+                return Integer.parseInt(address.substring(address.lastIndexOf('.') + 1));
+            }
             return Integer.parseInt(address.split(":")[1]);
         } catch (NumberFormatException nfe) {
             return -1;
